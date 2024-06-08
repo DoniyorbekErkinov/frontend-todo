@@ -16,9 +16,6 @@
 import { IApp } from '@/models/type';
 import { Share3Icon, EditCircleIcon } from 'vue-tabler-icons';
 import { useRouter } from 'vue-router';
-import Modal from "@/components/Modal.vue"
-import { ref } from 'vue';
-
 // Consts & Props
 interface IProps {
     app: IApp
@@ -28,7 +25,7 @@ const props = defineProps<IProps>()
 const emits = defineEmits(["edit"])
 
 const openInNewTab = () => {
-    const routeData = router.resolve({ name: 'AppPage', params: { appId: props.app.id } });
+    const routeData = router.resolve({ name: 'AppPage', params: { appId: props.app.id }, query: {name: props.app.name.replace(" ", "_")} });
     window.open(routeData.href, '_blank');
 }
 

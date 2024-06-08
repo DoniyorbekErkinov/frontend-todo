@@ -7,7 +7,6 @@ const apiClient: AxiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 });
-console.log(import.meta.env.VITE_API_URL)
 export const ApiService = {
   get(url: string) {
     return apiClient.get(url);
