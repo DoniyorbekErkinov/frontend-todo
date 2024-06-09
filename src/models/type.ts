@@ -1,7 +1,8 @@
 export interface IApp {
     id: number;
     name: string;
-    todos: ITodo[]
+    todos: ITodo[];
+    createdAt: string;
 }
 
 export interface ITodo {
@@ -9,6 +10,7 @@ export interface ITodo {
     name: string;
     isCompleted: boolean;
     isArchived: boolean;
+    createdAt: string;
     tasks: ITask[]
 }
 

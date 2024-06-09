@@ -4,6 +4,7 @@ import AppCard from "@/components/AppCard.vue";
 import { useMainStore } from "@/store/main.store";
 import Modal from '@/components/Modal.vue';
 import { IApp } from '@/models/type';
+import { MoodEmptyIcon } from 'vue-tabler-icons';
 
 const store = useMainStore()
 const modal = ref<boolean>(false);
@@ -41,11 +42,19 @@ store.GetApps()
                 Add
             </button>
         </div>
-        <div class="grid grid-cols-4 gap-8 mt-4">
+        <div v-if="store.getApps.length > 0" class="grid grid-cols-4 gap-8 mt-4">
             <div v-for="(app, i) in store.getApps">
                 <AppCard :app="app" @edit="Edit"/>
             </div>
         </div>
+        <div v-else class="w-full h-full flex flex-1 justify-center items-center mt-4">
+            <div class="flex flex-col items-center justify-center">
+              <div class="h-20 w-20">
+                <MoodEmptyIcon class="text-mainBlue" size="80" />
+              </div>
+              <div class="text-mainBlue text-xl"> Not Found</div>
+            </div>
+          </div>
         <Modal v-if="modal" :title="isCreate ? 'Add App' : 'Edit App'" :close="modal" @close="(e: boolean) => modal = e">
             <form @submit.prevent="addApp">
                 <div class="mb-4">

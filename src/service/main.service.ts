@@ -11,6 +11,16 @@ const MainService = {
     return ApiService.post("apps", appData);
   },
 
+  // Update a specific app name
+  updateAppName(appId: number, appName: { name: string }) {
+    return ApiService.put(`apps/${appId}`, appName);
+  },
+
+  // Delete a specific app
+  deleteApp(appId: number) {
+    return ApiService.delete(`apps/${appId}`);
+  },
+
   // Get todos of a specific app
   getTodos(appId: number) {
     return ApiService.get(`apps/${appId}/todos`);
@@ -21,14 +31,14 @@ const MainService = {
     return ApiService.post(`apps/${appId}/todos`, todoData);
   },
 
-  // Update a specific app name
-  updateAppName(appId: number, appName: { name: string }) {
-    return ApiService.put(`apps/${appId}`, appName);
-  },
-
   // Update a specific todo name in a specific app
   updateTodoName(appId: number, todoId: number, todoName: { name: string }) {
     return ApiService.put(`apps/${appId}/todos/${todoId}`, todoName);
+  },
+
+  // Delete a specific todo in a specific app
+  deleteTodo(appId: number, todoId: number) {
+    return ApiService.delete(`apps/${appId}/todos/${todoId}`);
   },
 
   // Archive a specific todo in a specific app
@@ -46,10 +56,25 @@ const MainService = {
     return ApiService.put(`apps/${appId}/todos/${todoId}/tasks/${taskId}`, taskData);
   },
 
+  // Delete a task in a specific todo in a specific app
+  deleteTask(appId: number, todoId: number, taskId: number) {
+    return ApiService.delete(`apps/${appId}/todos/${todoId}/tasks/${taskId}`);
+  },
+
+  // Get tasks of a specific todo in a specific app
+  getTasks(appId: number, todoId: number) {
+    return ApiService.get(`apps/${appId}/todos/${todoId}/tasks`);
+  },
+
   // Check or uncheck a todo
   toggleTodoCompletion(appId: number, todoId: number) {
     return ApiService.put(`apps/${appId}/todos/${todoId}/check`, {});
-  }
+  },
+
+  // Check or uncheck a task in a specific todo in a specific app
+  toggleTaskCompletion(appId: number, todoId: number, taskId: number) {
+    return ApiService.put(`apps/${appId}/todos/${todoId}/tasks/${taskId}/toggle`, {});
+  },
 };
 
 export default MainService;
