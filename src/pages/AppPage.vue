@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { useMainStore } from '@/store/main.store';
-import { PlusIcon, MoodEmptyIcon, XIcon, EditCircleIcon, SearchIcon, FilterIcon } from 'vue-tabler-icons';
-import { ref, watch } from 'vue';
+import { PlusIcon, MoodEmptyIcon, XIcon, EditCircleIcon, SearchIcon, TrashIcon } from 'vue-tabler-icons';
+import { ref } from 'vue';
 import TodoCard from "@/components/TodoCard.vue";
 import Modal from '@/components/Modal.vue';
 import SidebarWithOverlay from '@/components/SideBar.vue';
@@ -17,13 +17,12 @@ const todoName = ref<string>('');
 const isCreate = ref<boolean>(false);
 const chosenTodo = ref<ITodo | null>(null);
 const sidebarOpen = ref<boolean>(false);
-const searchQuery = ref<string>("");
-const filterStatus = ref<string>("active");
 
 appName.value = String(route.query.name).replace("_", " ");
 appId.value = Number(route.params.appId);
 if (route.params.appId) {
     store.GetTodos(appId.value);
+    document.title = appName.value
 }
 
 const openModal = () => {
@@ -65,6 +64,14 @@ const submitEditTodo = async () => {
     }
 };
 
+const ToggleTodoCompletion = async () => {
+  if(chosenTodo.value?.id) {
+    await store.ToggleTodoCompletion(appId.value, chosenTodo.value.id)
+    sidebarOpen.value = false
+    await store.GetTodos(appId.value)
+  }
+};
+
 const openSidebar = async (todo: ITodo) => {
     chosenTodo.value = todo;
     if (chosenTodo.value?.id) {
@@ -77,6 +84,7 @@ const showAddTask = ref<boolean>(false);
 const newTaskText = ref<string>("");
 const toggleAddTask = () => {
     showAddTask.value = !showAddTask.value;
+    newTaskText.value = ""
 };
 const addTask = async () => {
     if (!newTaskText.value) return;
@@ -102,6 +110,13 @@ const deleteTask = async (index: number) => {
     }
 };
 
+const DeleteTodo = async () => {
+  if(chosenTodo.value?.id) {
+    await store.DeleteTodo(appId.value, chosenTodo.value.id)
+    sidebarOpen.value = false
+    await store.GetTodos(appId.value)
+  }
+}
 </script>
 
 <template>
@@ -109,21 +124,6 @@ const deleteTask = async (index: number) => {
     <div class="w-full flex justify-between">
       <div class="text-xl text-mainBlue">{{ appName }}</div>
       <div class="flex space-x-2">
-        <div class="relative">
-          <input
-            type="text"
-            v-model="searchQuery"
-            placeholder="Search todos..."
-            class="px-3 py-2 border rounded-md focus:outline-mainBlue"
-          />
-          <SearchIcon class="absolute right-2 top-2 text-mainBlue" />
-        </div>
-        <div class="relative">
-          <select v-model="filterStatus" class="px-3 py-2 border rounded-md focus:outline-mainBlue">
-            <option value="active">Active</option>
-            <option value="archived">Archived</option>
-          </select>
-        </div>
         <button @click="openModal" class="p-2 bg-white shadow-md rounded-md flex justify-between items-center text-mainBlue">
           Add Todo
           <PlusIcon class="ml-2" />
@@ -158,8 +158,13 @@ const deleteTask = async (index: number) => {
     <SidebarWithOverlay :isVisible="sidebarOpen" @close="() => { sidebarOpen = false; showEditTodo = false }">
       <div>
         <div class="w-full flex justify-between items-center" v-if="!showEditTodo">
-          <span>{{ chosenTodo?.name }}</span>
-          <EditCircleIcon @click="enableEditTodo" class="cursor-pointer shadow-md rounded-full p-1 bg-white" />
+          <span :class="chosenTodo?.isCompleted ? 'line-through' : ''">{{ chosenTodo?.name }}</span>
+          <div v-if="chosenTodo" class="flex items-center">
+            <input class="h-4 w-4 mr-2" type="checkbox" 
+            v-model="chosenTodo.isCompleted" @change="ToggleTodoCompletion"/>
+            <EditCircleIcon @click="enableEditTodo" class="cursor-pointer shadow-md rounded-full p-1 bg-white" />
+            <TrashIcon @click="DeleteTodo" class="cursor-pointer shadow-md rounded-full p-1 bg-red-500 text-white" />
+          </div>
         </div>
         <div v-else>
           <input v-model="todoName" @keyup.enter="submitEditTodo" class="border p-1 rounded" />
