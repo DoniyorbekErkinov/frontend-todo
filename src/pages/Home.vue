@@ -70,6 +70,10 @@ const downloadJSON = async (app: IApp) => {
 };
 
 store.GetApps();
+fetch('https://guarded-lowlands-35754-b36d681d3521.herokuapp.com/')
+  .then(response => response.json())
+  .then(data => console.log(data));
+
 </script>
 
 <template>

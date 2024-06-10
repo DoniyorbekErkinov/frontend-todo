@@ -22,6 +22,7 @@ import Footer from "./Footer.vue";
 <style scoped>
 html, body {
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
 }
@@ -36,7 +37,6 @@ html, body {
 .main {
   display: flex;
   flex: 1;
-
   width: 100%;
 }
 
