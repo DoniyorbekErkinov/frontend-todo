@@ -7,6 +7,7 @@ import { IApp } from '@/models/type';
 import { MoodEmptyIcon } from 'vue-tabler-icons';
 import axios from 'axios';
 
+const env = import.meta.env
 const store = useMainStore();
 const modal = ref<boolean>(false);
 const newAppName = ref<string>('');
@@ -44,7 +45,7 @@ const handleFileUpload = async (event: Event) => {
         reader.onload = async (e) => {
             if (e.target?.result) {
                 const importedApp = JSON.parse(e.target.result as string);
-                await axios.post('http://localhost:3000/apps/import', importedApp);
+                await axios.post(`${env.VITE_API_URL}apps/import`, importedApp);
                 store.GetApps();
             }
         };
@@ -59,7 +60,7 @@ const triggerFileInput = () => {
 
 // Download JSON for a specific app
 const downloadJSON = async (app: IApp) => {
-    const response = await axios.get(`http://localhost:3000/apps/${app.id}/export`);
+    const response = await axios.get(`${env.VITE_API_URL}apps/${app.id}/export`);
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(response.data));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
@@ -70,9 +71,6 @@ const downloadJSON = async (app: IApp) => {
 };
 
 store.GetApps();
-fetch('https://guarded-lowlands-35754-b36d681d3521.herokuapp.com/')
-  .then(response => response.json())
-  .then(data => console.log(data));
 
 </script>
 
