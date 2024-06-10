@@ -38,6 +38,7 @@ export const useMainStore = defineStore('main', {
         }
     },
     actions: {
+        // App Crud
         async GetApps() {
             this.apps = [];
             await MainService.getApps().then((res: any) => {
@@ -62,9 +63,11 @@ export const useMainStore = defineStore('main', {
                 this.GetApps();
             });
         },
+        // App Crud
+        // Todo Crud
         async CreateTodo(appId: number, name: string) {
             await MainService.createTodo(appId, { name }).then((res: AxiosResponse) => {
-                console.log(res);                
+                console.log(res);
             });
         },
         async EditTodo(data: { appId: number, todoId: number, name: string }) {
@@ -74,19 +77,31 @@ export const useMainStore = defineStore('main', {
         },
         async DeleteTodo(appId: number, todoId: number) {
             await MainService.deleteTodo(appId, todoId).then((res: AxiosResponse) => {
-                console.log(res);                
+                console.log(res);
             });
         },
         async ArchiveTodo(appId: number, todoId: number) {
             await MainService.archiveTodo(appId, todoId).then((res: AxiosResponse) => {
-                console.log(res);                
+                console.log(res);
             });
         },
         async UnarchiveTodo(appId: number, todoId: number) {
             await MainService.unarchiveTodo(appId, todoId).then((res: AxiosResponse) => {
-                console.log(res);                
+                console.log(res);
             });
         },
+        async ToggleTodoCompletion(appId: number, todoId: number) {
+            await MainService.toggleTodoCompletion(appId, todoId).then((res: AxiosResponse) => {
+                console.log(res);
+            });
+        },
+        async SearchAndFilterTodos(appId: number) {
+            await MainService.searchAndFilterTodos(appId, this.filter).then((res: AxiosResponse) => {
+                this.todos = res.data;
+            });
+        },
+        // Todo Crud
+        // Task Crud
         async CreateTask(appId: number, todoId: number, taskData: { text: string, isCompleted: boolean }) {
             await MainService.addTask(appId, todoId, taskData).then((res: AxiosResponse) => {
                 console.log(res);
@@ -104,22 +119,13 @@ export const useMainStore = defineStore('main', {
                 this.tasks = res.data;
             });
         },
-        async ToggleTodoCompletion(appId: number, todoId: number) {
-            await MainService.toggleTodoCompletion(appId, todoId).then((res: AxiosResponse) => {
-                console.log(res);                
-            });
-        },
         async ToggleTaskCompletion(appId: number, todoId: number, taskId: number) {
             await MainService.toggleTaskCompletion(appId, todoId, taskId).then((res: AxiosResponse) => {
                 console.log(res);
                 this.GetTasks(appId, todoId);
             });
-        },
-        async SearchAndFilterTodos(appId: number) {
-            await MainService.searchAndFilterTodos(appId, this.filter).then((res: AxiosResponse) => {
-                this.todos = res.data;
-            });
         }
+        // Task Crud
     }
 });
 
