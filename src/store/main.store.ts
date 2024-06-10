@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { IApp, ITodo, ITask } from '@/models/type'
+import { IApp, ITodo, ITask, Ifilter } from '@/models/type'
 import MainService from '@/service/main.service'
 import { AxiosResponse } from 'axios'
 
@@ -9,7 +9,9 @@ interface IMainStore {
     tasks: ITask[];
     todo: ITodo | null;
     task: ITask | null;
+    filter: Ifilter
 }
+
 
 export const useMainStore = defineStore('main', {
     state: (): IMainStore => ({
@@ -17,7 +19,12 @@ export const useMainStore = defineStore('main', {
         todos: [],
         tasks: [],
         todo: null,
-        task: null
+        task: null,
+        filter: {
+            query: "",
+            archived: false,
+            completed: null
+        }
     }),
     getters: {
         getApps(): IApp[] {
@@ -55,27 +62,29 @@ export const useMainStore = defineStore('main', {
                 this.GetApps();
             });
         },
-        async GetTodos(appId: number) {
-            await MainService.getTodos(appId).then((res: AxiosResponse) => {
-                this.todos = res.data;
-            });
-        },
         async CreateTodo(appId: number, name: string) {
             await MainService.createTodo(appId, { name }).then((res: AxiosResponse) => {
-                console.log(res);
-                this.GetTodos(appId);
+                console.log(res);                
             });
         },
         async EditTodo(data: { appId: number, todoId: number, name: string }) {
             await MainService.updateTodoName(data.appId, data.todoId, { name: data.name }).then((res: AxiosResponse) => {
                 console.log(res);
-                this.GetTodos(data.appId);
             });
         },
         async DeleteTodo(appId: number, todoId: number) {
             await MainService.deleteTodo(appId, todoId).then((res: AxiosResponse) => {
-                console.log(res);
-                this.GetTodos(appId);
+                console.log(res);                
+            });
+        },
+        async ArchiveTodo(appId: number, todoId: number) {
+            await MainService.archiveTodo(appId, todoId).then((res: AxiosResponse) => {
+                console.log(res);                
+            });
+        },
+        async UnarchiveTodo(appId: number, todoId: number) {
+            await MainService.unarchiveTodo(appId, todoId).then((res: AxiosResponse) => {
+                console.log(res);                
             });
         },
         async CreateTask(appId: number, todoId: number, taskData: { text: string, isCompleted: boolean }) {
@@ -97,8 +106,7 @@ export const useMainStore = defineStore('main', {
         },
         async ToggleTodoCompletion(appId: number, todoId: number) {
             await MainService.toggleTodoCompletion(appId, todoId).then((res: AxiosResponse) => {
-                console.log(res);
-                this.GetTodos(appId);
+                console.log(res);                
             });
         },
         async ToggleTaskCompletion(appId: number, todoId: number, taskId: number) {
@@ -106,6 +114,12 @@ export const useMainStore = defineStore('main', {
                 console.log(res);
                 this.GetTasks(appId, todoId);
             });
+        },
+        async SearchAndFilterTodos(appId: number) {
+            await MainService.searchAndFilterTodos(appId, this.filter).then((res: AxiosResponse) => {
+                this.todos = res.data;
+            });
         }
     }
 });
+

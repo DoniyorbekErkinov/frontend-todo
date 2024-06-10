@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useMainStore } from '@/store/main.store';
 import { PlusIcon, MoodEmptyIcon, XIcon, EditCircleIcon, SearchIcon, TrashIcon } from 'vue-tabler-icons';
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import TodoCard from "@/components/TodoCard.vue";
 import Modal from '@/components/Modal.vue';
 import SidebarWithOverlay from '@/components/SideBar.vue';
@@ -10,6 +10,7 @@ import { ITodo } from '@/models/type';
 
 const store = useMainStore();
 const route = useRoute();
+const router = useRouter();
 const appName = ref<string>("");
 const appId = ref<number>(0);
 const modal = ref<boolean>(false);
@@ -17,13 +18,41 @@ const todoName = ref<string>('');
 const isCreate = ref<boolean>(false);
 const chosenTodo = ref<ITodo | null>(null);
 const sidebarOpen = ref<boolean>(false);
+const searchQuery = ref<string | undefined>(store.filter.query);
+const filterArchived = ref<boolean | null | undefined>(store.filter.archived);
+const filterCompleted = ref<boolean | null | undefined>(store.filter.completed);
 
 appName.value = String(route.query.name).replace("_", " ");
 appId.value = Number(route.params.appId);
-if (route.params.appId) {
-    store.GetTodos(appId.value);
-    document.title = appName.value
-}
+
+const applyFiltersFromQuery = () => {
+    searchQuery.value = route.query.query as string || '';
+    filterArchived.value = route.query.archived !== undefined ? route.query.archived === 'true' : null;
+    filterCompleted.value = route.query.completed !== undefined ? route.query.completed === 'true' : null;
+    store.filter.query = searchQuery.value;
+    store.filter.archived = filterArchived.value;
+    store.filter.completed = filterCompleted.value;
+    store.SearchAndFilterTodos(appId.value);
+};
+
+onMounted(() => {
+    if (route.params.appId) {
+        document.title = appName.value;
+        applyFiltersFromQuery();
+    }
+});
+
+const updateQueryParams = () => {
+    router.push({
+        query: {
+            ...route.query,
+            query: searchQuery.value || undefined,
+            archived: filterArchived.value !== null ? String(filterArchived.value) : undefined,
+            completed: filterCompleted.value !== null ? String(filterCompleted.value) : undefined
+        }
+    });
+    store.SearchAndFilterTodos(appId.value);
+};
 
 const openModal = () => {
     modal.value = true;
@@ -42,7 +71,7 @@ const addTodo = async () => {
     }
     modal.value = false;
     todoName.value = '';
-    store.GetTodos(appId.value);
+    store.SearchAndFilterTodos(appId.value);
 };
 
 const showEditTodo = ref<boolean>(false);
@@ -60,7 +89,7 @@ const submitEditTodo = async () => {
             chosenTodo.value.name = todoName.value;
         }
         showEditTodo.value = false;
-        await store.GetTodos(appId.value);
+        await store.SearchAndFilterTodos(appId.value);
     }
 };
 
@@ -68,7 +97,7 @@ const ToggleTodoCompletion = async () => {
   if(chosenTodo.value?.id) {
     await store.ToggleTodoCompletion(appId.value, chosenTodo.value.id)
     sidebarOpen.value = false
-    await store.GetTodos(appId.value)
+    await store.SearchAndFilterTodos(appId.value)
   }
 };
 
@@ -114,9 +143,27 @@ const DeleteTodo = async () => {
   if(chosenTodo.value?.id) {
     await store.DeleteTodo(appId.value, chosenTodo.value.id)
     sidebarOpen.value = false
-    await store.GetTodos(appId.value)
+    await store.SearchAndFilterTodos(appId.value)
   }
 }
+
+const handleSearch = () => {
+    updateQueryParams();
+};
+
+const handleEnter = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+        handleSearch();
+    }
+};
+
+watch([filterArchived, filterCompleted], () => {  
+    store.filter.archived = filterArchived.value;
+    store.filter.completed = filterCompleted.value;
+    updateQueryParams();
+    store.SearchAndFilterTodos(appId.value)
+});
+
 </script>
 
 <template>
@@ -129,6 +176,24 @@ const DeleteTodo = async () => {
           <PlusIcon class="ml-2" />
         </button>
       </div>
+    </div>
+    <div class="flex space-x-2 mt-4">
+      <div class="relative w-1/3">
+        <input type="text" v-model="searchQuery" @keyup="handleEnter" placeholder="Search Todos" class="p-2 border rounded-md w-full" />
+        <button @click="handleSearch" class="absolute right-0 top-0 h-full px-3 bg-mainBlue text-white rounded-r-md">
+          <SearchIcon />
+        </button>
+      </div>
+      <select v-model="filterArchived" class="p-2 border rounded-md">
+        <option :value="null">All</option>
+        <option :value="true">Archived</option>
+        <option :value="false">Active</option>
+      </select>
+      <select v-model="filterCompleted" class="p-2 border rounded-md">
+        <option :value="null">All</option>
+        <option :value="true">Completed</option>
+        <option :value="false">Incomplete</option>
+      </select>
     </div>
     <div v-if="store.getTodos.length > 0" class="grid grid-cols-4 gap-4 mt-4">
       <TodoCard :todo="todo" v-for="(todo, i) in store.getTodos" :key="i" @click="openSidebar(todo)" />
@@ -212,6 +277,7 @@ const DeleteTodo = async () => {
     </SidebarWithOverlay>
   </div>
 </template>
+
 
 <style scoped>
 .dropdown-enter-active,

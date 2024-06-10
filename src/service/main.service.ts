@@ -20,15 +20,9 @@ const MainService = {
   deleteApp(appId: number) {
     return ApiService.delete(`apps/${appId}`);
   },
-
-  // Get todos of a specific app
-  getTodos(appId: number) {
-    return ApiService.get(`apps/${appId}/todos`);
-  },
-
   // Create a new todo in a specific app
   createTodo(appId: number, todoData: { name: string }) {
-    return ApiService.post(`apps/${appId}/todos`, todoData);
+    return ApiService.post(`apps/${appId}/todos/new`, todoData);
   },
 
   // Update a specific todo name in a specific app
@@ -44,6 +38,11 @@ const MainService = {
   // Archive a specific todo in a specific app
   archiveTodo(appId: number, todoId: number) {
     return ApiService.put(`apps/${appId}/todos/${todoId}/archive`, {});
+  },
+
+  // Unarchive a specific todo in a specific app
+  unarchiveTodo(appId: number, todoId: number) {
+    return ApiService.put(`apps/${appId}/todos/${todoId}/unarchive`, {});
   },
 
   // Add a task to a specific todo in a specific app
@@ -74,6 +73,9 @@ const MainService = {
   // Check or uncheck a task in a specific todo in a specific app
   toggleTaskCompletion(appId: number, todoId: number, taskId: number) {
     return ApiService.put(`apps/${appId}/todos/${todoId}/tasks/${taskId}/toggle`, {});
+  },
+  searchAndFilterTodos(appId: number, queryParams: any) {
+    return ApiService.post(`apps/${appId}/todos`, queryParams);
   },
 };
 

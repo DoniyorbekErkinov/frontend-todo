@@ -18,3 +18,6 @@ export interface ITask {
     isCompleted: boolean;
     text: string;
 }
+export interface Ifilter {
+    query?: string, archived?: boolean | null, completed?: boolean | null
+}
