@@ -1,7 +1,7 @@
 <template>
     <div>
         <div
-            class="w-full h-[80px] text-mainBlue font-medium bg-slate-100 rounded-lg shadow-lg flex flex-col items-start p-2">
+            class="w-full min-w-[300px] h-[80px] text-mainBlue font-medium bg-slate-100 rounded-lg shadow-lg flex flex-col items-start p-2">
             <div class="flex items-center justify-end w-full ">
                 <Share3Icon @click="openInNewTab" class="cursor-pointer shadow-md rounded-full p-1 bg-white mr-2" />
                 <EditCircleIcon @click="EditApp" class="cursor-pointer shadow-md rounded-full p-1 bg-white mr-2" />

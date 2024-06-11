@@ -209,7 +209,7 @@ watch([filterArchived, filterCompleted], () => {
     </div>
     <!-- Filters -->
      <!-- Todos -->
-     <div v-if="store.getTodos.length > 0" class="grid grid-cols-4 gap-4 mt-4">
+     <div v-if="store.getTodos.length > 0" class="grid grid-cols-1 gap-8 lg:grid-cols-4 md:grid-cols-2 xs:grid-cols-1 mt-4">
        <TodoCard :todo="todo" v-for="(todo, i) in store.getTodos" :key="i" @click="openSidebar(todo)" />
      </div>
      <div v-else class="w-full h-full flex flex-1 justify-center items-center">

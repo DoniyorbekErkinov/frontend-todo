@@ -85,7 +85,7 @@ store.GetApps();
                 Import JSON
             </button>
         </div>
-        <div v-if="store.getApps.length > 0" class="grid grid-cols-4 gap-8 mt-4">
+        <div v-if="store.getApps.length > 0" class="grid grid-cols-1 gap-8 lg:grid-cols-4 md:grid-cols-2 xs:grid-cols-1 mt-4">
             <div v-for="(app, i) in store.getApps" :key="i">
                 <AppCard :app="app" @edit="Edit" @downloadJSON="(e: IApp) => downloadJSON(e)"/>                
             </div>

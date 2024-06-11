@@ -1,7 +1,7 @@
 <template>
     <div>
         <div
-            class="w-full h-auto text-mainBlue font-medium bg-slate-100 rounded-lg shadow-lg flex flex-col items-start p-2">
+            class="w-full min-w-[200px] h-auto text-mainBlue font-medium bg-slate-100 rounded-lg shadow-lg flex flex-col items-start p-2">
             <div :class="todo.isCompleted ? 'line-through' : ''" class="text-lg">
                 {{ props.todo.name }}
             </div>
