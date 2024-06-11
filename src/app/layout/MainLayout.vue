@@ -4,7 +4,7 @@ import Footer from "./Footer.vue";
 </script>
 
 <template>
-  <div class="container">
+  <div class="wrapper">
     <main class="main">
       <div class="page">
         <Header />
@@ -27,10 +27,11 @@ html, body {
   padding: 0;
 }
 
-.container {
+.wrapper {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  width: 100%;
 
 }
 
