@@ -41,7 +41,7 @@ export const useMainStore = defineStore('main', {
         // App Crud
         async GetApps() {
             this.apps = [];
-            await MainService.getApps().then((res: any) => {
+            await MainService.getApps().then((res: AxiosResponse) => {
                 this.apps = res.data;
             });
         },

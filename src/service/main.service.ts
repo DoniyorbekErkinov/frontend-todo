@@ -1,3 +1,4 @@
+import { Ifilter } from "@/models/type";
 import { ApiService } from "./api.service";
 
 const MainService = {
@@ -74,7 +75,7 @@ const MainService = {
   toggleTaskCompletion(appId: number, todoId: number, taskId: number) {
     return ApiService.put(`apps/${appId}/todos/${todoId}/tasks/${taskId}/toggle`, {});
   },
-  searchAndFilterTodos(appId: number, queryParams: any) {
+  searchAndFilterTodos(appId: number, queryParams: Ifilter) {
     return ApiService.post(`apps/${appId}/todos`, queryParams);
   },
 };
